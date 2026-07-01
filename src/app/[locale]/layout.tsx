@@ -44,18 +44,12 @@ export async function generateMetadata(
     openGraph: {
       type: 'website',
       siteName: t('app_name'),
-      title: {
-        default: t('app_name'),
-        template: t('title_template'),
-      },
+      title: t('title'),
       description: t('description'),
     },
     twitter: {
       card: 'summary',
-      title: {
-        default: t('app_name'),
-        template: t('title_template'),
-      },
+      title: t('title'),
       description: t('description'),
     },
   };
