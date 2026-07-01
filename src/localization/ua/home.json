@@ -1,3 +1,6 @@
 {
-  "title": "Привіт"
+  "app_name": "Collect Taste",
+  "title": "Collect Taste",
+  "description": "Збирайте улюблені рецепти. Діліться спогадами.",
+  "title_template": "%s - Collect Taste"
 }

@@ -1,3 +1,6 @@
 {
-  "title": "Hello"
+  "app_name": "Collect Taste",
+  "title": "Collect Taste",
+  "description": "Collect your favorite recipes. Share your memories.",
+  "title_template": "%s - Collect Taste"
 }

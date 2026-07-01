@@ -8,12 +8,15 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Collect recipes. Share memories.',
 
     start_url: '/',
+    scope: '/',
 
     display: 'standalone',
 
     background_color: '#FFF3CF',
 
     theme_color: '#55642E',
+
+    categories: ['food', 'productivity'],
 
     icons: [
       {
