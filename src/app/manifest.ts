@@ -20,12 +20,12 @@ export default function manifest(): MetadataRoute.Manifest {
 
     icons: [
       {
-        src: '/icons/icon-light.png',
+        src: '/icons/192.png',
         sizes: '192x192',
         type: 'image/png',
       },
       {
-        src: '/icons/icon-light.png',
+        src: '/icons/512.png',
         sizes: '512x512',
         type: 'image/png',
       },
