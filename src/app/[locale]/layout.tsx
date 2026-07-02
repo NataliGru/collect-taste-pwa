@@ -1,12 +1,14 @@
 // eslint-disable-next-line simple-import-sort/imports
-import type { Metadata, Viewport } from 'next';
+import type { Viewport } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Inter } from 'next/font/google';
 import { notFound } from 'next/navigation';
 
-import OnlineStatus from '@/features/todo/OnlineStatus';
+// import OnlineStatus from '@/features/todo/OnlineStatus';
 import { ProvidersLayout } from '@/providers';
 import { cn, isAppLocale, routing } from '@/shared';
+
+import '../globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -61,7 +63,7 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default async function LocaleLayout({
+export default async function RootLayout({
   children,
   params,
 }: LayoutProps<'/[locale]'>) {
@@ -77,7 +79,7 @@ export default async function LocaleLayout({
     <html className='h-full' lang={locale} dir='ltr'>
       <body className={cn(inter.className, 'flex h-full flex-col')}>
         <ProvidersLayout>
-          <OnlineStatus />
+          {/* <OnlineStatus /> */}
           {children}
         </ProvidersLayout>
       </body>
