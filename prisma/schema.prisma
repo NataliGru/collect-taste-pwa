@@ -42,6 +42,11 @@ enum ReactionType {
   DISLIKE
 }
 
+enum Locale {
+  UK
+  EN
+}
+
 // =====================
 // Users
 // =====================
@@ -101,14 +106,14 @@ model Recipe {
   authorId String
   author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  categories RecipeCategory[]
-  tags       RecipeTag[]
-  images     RecipeImage[]
-  products   RecipeProduct[]
-  steps      RecipeStep[]
-  favorites  Favorite[]
-  comments   Comment[]
-  reactions  RecipeReaction[]
+  categories  RecipeCategory[]
+  tags        RecipeTag[]
+  images      RecipeImage[]
+  ingredients RecipeIngredient[]
+  steps       RecipeStep[]
+  favorites   Favorite[]
+  comments    Comment[]
+  reactions   RecipeReaction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -123,43 +128,83 @@ model Recipe {
 model Category {
   id    String  @id @default(cuid())
   title String  @unique
+  slug  String  @unique
   image String?
 
-  recipes RecipeCategory[]
+  translations CategoryTranslation[]
+  recipes      RecipeCategory[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model CategoryTranslation {
+  id         String @id @default(cuid())
+  categoryId String
+  locale     Locale
+  title      String
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
 }
 
 model Tag {
   id    String  @id @default(cuid())
   title String  @unique
+  slug  String  @unique
   image String?
 
-  recipes RecipeTag[]
+  translations TagTranslation[]
+  recipes      RecipeTag[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model TagTranslation {
+  id     String @id @default(cuid())
+  tagId  String
+  locale Locale
+  title  String
+
+  tag Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([tagId, locale])
 }
 
 model Allergen {
   id    String  @id @default(cuid())
   title String  @unique
+  slug  String  @unique
   image String?
 
-  products ProductAllergen[]
+  translations AllergenTranslation[]
+  ingredients  IngredientAllergen[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model AllergenTranslation {
+  id         String @id @default(cuid())
+  allergenId String
+  locale     Locale
+  title      String
+
+  allergen Allergen @relation(fields: [allergenId], references: [id], onDelete: Cascade)
+
+  @@unique([allergenId, locale])
+}
+
 // =====================
-// Products
+// Ingredients / Products
 // =====================
 
-model Product {
+model Ingredient {
   id    String  @id @default(cuid())
-  title String
+  title String  @unique
+  slug  String  @unique
   image String?
   note  String?
 
@@ -169,50 +214,121 @@ model Product {
   carbs         Float?
   glycemicIndex Float?
 
-  authorId String?
-  author   User?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
-
-  recipeProducts RecipeProduct[]
-  allergens      ProductAllergen[]
+  translations      IngredientTranslation[]
+  allergens         IngredientAllergen[]
+  products          Product[]
+  recipeIngredients RecipeIngredient[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model RecipeProduct {
+model IngredientTranslation {
+  id           String @id @default(cuid())
+  ingredientId String
+  locale       Locale
+  title        String
+
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@unique([ingredientId, locale])
+}
+
+model Product {
+  id    String  @id @default(cuid())
+  title String
+  slug  String
+  image String?
+  note  String?
+
+  calories      Float?
+  protein       Float?
+  fat           Float?
+  carbs         Float?
+  glycemicIndex Float?
+
+  ingredientId String?
+  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id], onDelete: SetNull)
+
+  authorId String?
+  author   User?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  recipeIngredients RecipeIngredient[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([authorId, slug])
+}
+
+model IngredientAllergen {
+  ingredientId String
+  allergenId   String
+
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+  allergen   Allergen   @relation(fields: [allergenId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([ingredientId, allergenId])
+}
+
+// =====================
+// Recipe Ingredients / Steps / Images
+// =====================
+
+model RecipeIngredient {
   id String @id @default(cuid())
 
   recipeId String
   recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
+  ingredientId String?
+  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id], onDelete: SetNull)
+
   productId String?
   product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
 
-  title     String
-  amount    Float?
-  unit      String?
-  note      String?
-  sortOrder Int?
+  title       String
+  amountGrams Float?
+  note        String?
+  sortOrder   Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model ProductAllergen {
-  productId  String
-  allergenId String
+model RecipeStep {
+  id       String @id @default(cuid())
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
-  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  allergen Allergen @relation(fields: [allergenId], references: [id], onDelete: Cascade)
+  title       String?
+  description String
+  image       String?
+  sortOrder   Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
 
-  @@id([productId, allergenId])
+model RecipeImage {
+  id       String @id @default(cuid())
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  url       String
+  alt       String?
+  sortOrder Int?
+  isCover   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // =====================
-// Recipe relations
+// Recipe Relations
 // =====================
 
 model RecipeCategory {
@@ -239,34 +355,6 @@ model RecipeTag {
   updatedAt DateTime @updatedAt
 
   @@id([recipeId, tagId])
-}
-
-model RecipeImage {
-  id       String @id @default(cuid())
-  recipeId String
-  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-
-  url       String
-  alt       String?
-  sortOrder Int?
-  isCover   Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model RecipeStep {
-  id       String @id @default(cuid())
-  recipeId String
-  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-
-  title       String?
-  description String
-  image       String?
-  sortOrder   Int
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 // =====================
