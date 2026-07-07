@@ -1,4 +1,5 @@
-import type { PrismaClient } from '../../src/generated/prisma/client';
+import type { PrismaClient } from '@/generated/prisma/client';
+
 import { categories } from '../seedData';
 
 export async function seedCategories(prisma: PrismaClient) {

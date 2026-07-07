@@ -1,7 +1,8 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import 'dotenv/config';
 
-import { PrismaClient } from '../src/generated/prisma/client';
+import { PrismaClient } from '@/generated/prisma/client';
+
 import { seedAllergens, seedCategories, seedTags } from './seeders';
 
 const adapter = new PrismaPg({
